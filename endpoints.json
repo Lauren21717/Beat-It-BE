@@ -1,5 +1,24 @@
 {
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
+  },
+  "GET /api/musicians": {
+    "description": "serves an array of all musician profiles",
+    "queries": [],
+    "exampleResponse": {
+      "musicians": [
+        {
+          "musician_id": 1,
+          "username": "guitarmaster",
+          "bio": "Experienced guitarist with 10 years of playing",
+          "experience_level": "advanced",
+          "instruments": "guitar, bass",
+          "genres": "rock, blues, jazz",
+          "available_for_gigs": true,
+          "location": "London",
+          "created_at": "2024-01-15T10:30:00.000Z"
+        }
+      ]
+    }
   }
 }
