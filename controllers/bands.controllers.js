@@ -1,4 +1,4 @@
-const { selectBands } = require('../models/bands.models');
+const { selectBands, selectBandById } = require('../models/bands.models');
 
 exports.getBands = (req, res, next) => {
     selectBands()
@@ -8,3 +8,12 @@ exports.getBands = (req, res, next) => {
         .catch(next);
 };
 
+exports.getBandById = (req, res, next) => {
+    const { band_id } = req.params;
+
+    selectBandById(band_id)
+        .then((band) => {
+            res.status(200).send({ band });
+        })
+        .catch(next);
+};
