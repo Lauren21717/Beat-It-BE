@@ -1,6 +1,7 @@
 const express = require('express');
 const { getApi } = require('./controllers/api.controllers.js');
 const { getMusicians, getMusicianById } = require('./controllers/musicians.controllers.js');
+const { getBands } = require('./controllers/bands.controllers.js');
 
 const app = express();
 app.use(express.json());
@@ -8,6 +9,7 @@ app.use(express.json());
 app.get('/api', getApi);
 app.get('/api/musicians', getMusicians);
 app.get('/api/musicians/:musician_id', getMusicianById);
+app.get('/api/bands', getBands);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

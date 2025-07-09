@@ -139,3 +139,60 @@ describe('GET /api/musicians/:musician_id', () => {
       });
   });
 });
+
+describe('GET /api/bands', () => {
+  test('200: responds with status 200', () => {
+    return request(app)
+      .get('/api/bands')
+      .expect(200);
+  });
+
+  test('200: responds with an object containing bands array', () => {
+    return request(app)
+      .get('/api/bands')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('bands');
+        expect(Array.isArray(body.bands)).toBe(true);
+      });
+  });
+
+  test('200: responds with correct number of bands', () => {
+    return request(app)
+      .get('/api/bands')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.bands).toHaveLength(2);
+      });
+  });
+
+  test('200: bands are sorted by created_at in descending order', () => {
+    return request(app)
+      .get('/api/bands')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.bands).toBeSortedBy('created_at', { descending: true });
+      });
+  });
+
+  test('200: each band has the correst properties', () => {
+    return request(app)
+      .get('/api/bands')
+      .expect(200)
+      .then(({ body }) => {
+        body.bands.forEach((band) => {
+          expect(band).toMatchObject({
+            band_id: expect.any(Number),
+            band_name: expect.any(String),
+            username: expect.any(String),
+            bio: expect.any(String),
+            genre: expect.any(String),
+            location: expect.any(String),
+            looking_for_instruments: expect.any(String),
+            experience_level: expect.any(String),
+            created_at: expect.any(String)
+          });
+        });
+      });
+  });
+});
