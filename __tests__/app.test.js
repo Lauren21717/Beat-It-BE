@@ -196,3 +196,58 @@ describe('GET /api/bands', () => {
       });
   });
 });
+
+describe('GET /api/bands/:band_id', () => {
+  test('200: responds with status 200', () => {
+    return request(app)
+      .get('/api/bands/1')
+      .expect(200);
+  });
+
+  test('200: responds with a single band object', () => {
+    return request(app)
+      .get('/api/bands/1')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('band');
+        expect(body.band).toBeInstanceOf(Object);
+      });
+  });
+
+  test('200: band has correct properties and values', () => {
+    return request(app)
+      .get('/api/bands/1')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.band).toMatchObject({
+          band_id: 1,
+          band_name: 'The Rock Stars',
+          username: 'rockband2023',
+          bio: expect.any(String),
+          genre: 'rock',
+          location: 'Manchester',
+          looking_for_instruments: expect.any(String),
+          experience_level: 'intermediate',
+          created_at: expect.any(String)
+        });
+      });
+  });
+
+  test('404: responds with error when band does not exist', () => {
+    return request(app)
+      .get('/api/bands/999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Band not found');
+      });
+  });
+
+  test('400: responds with error when given invalid band_id', () => {
+    return request(app)
+      .get('/api/bands/not-a-number')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+});
