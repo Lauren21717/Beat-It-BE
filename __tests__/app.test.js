@@ -112,7 +112,7 @@ describe('GET /api/musicians', () => {
         .get('/api/musicians?location=London')
         .expect(200)
         .then(({ body }) => {
-            expect(body.musicians.length).toBeGreaterThan(0);
+          expect(body.musicians.length).toBeGreaterThan(0);
           body.musicians.forEach((musician) => {
             expect(musician.location).toMatch(/London/i);
           });
@@ -274,6 +274,102 @@ describe('GET /api/bands', () => {
           });
         });
       });
+  });
+
+  describe('filtering queries', () => {
+    test('200: filters bands by genre', () => {
+      return request(app)
+        .get('/api/bands?genre=rock')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.genre.toLowerCase()).toMatch(/rock/i);
+          });
+        });
+    });
+
+    test('200: filters bands by location', () => {
+      return request(app)
+        .get('/api/bands?location=Manchester')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.location.toLowerCase()).toMatch(/manchester/i);
+          });
+        });
+    });
+
+    test('200: filters bands by the instrument they are looking for', () => {
+      return request(app)
+        .get('/api/bands?looking_for_instrument=guitar')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.looking_for_instruments.toLowerCase()).toMatch(/guitar/);
+          });
+        });
+    });
+
+    test('200: filters bands by experience level', () => {
+      return request(app)
+        .get('/api/bands?experience_level=intermediate')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.experience_level).toBe('intermediate');
+          });
+        });
+    });
+
+    test('200: supports multiple filters simultaneously (genre and location)', () => {
+      return request(app)
+        .get('/api/bands?genre=rock&location=Manchester')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.genre.toLowerCase()).toMatch(/rock/);
+            expect(band.location.toLowerCase()).toMatch(/manchester/i);
+          });
+        });
+    });
+
+    test('200: filtering is case-insensitive', () => {
+      return request(app)
+        .get('/api/bands?genre=ROCK')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.genre.toLowerCase()).toMatch(/rock/);
+          });
+        });
+    });
+
+    test('200: returns an empty array when no bands match the filter', () => {
+      return request(app)
+        .get('/api/bands?genre=metal')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands).toEqual([]);
+        });
+    });
+
+    test('200: handles filters with spaces', () => {
+      return request(app)
+        .get('/api/bands?looking_for_instrument=lead%20guitar')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.bands.length).toBeGreaterThan(0);
+          body.bands.forEach((band) => {
+            expect(band.looking_for_instruments.toLowerCase()).toMatch(/lead guitar/);
+          });
+        });
+    });
   });
 });
 

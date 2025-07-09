@@ -1,7 +1,9 @@
-const { selectBands, selectBandById } = require('../models/bands.models');
+const { selectBands, selectBandById } = require('../models/bands.models.js');
 
 exports.getBands = (req, res, next) => {
-    selectBands()
+    const { genre, location, looking_for_instrument, experience_level } = req.query;
+
+    selectBands(genre, location, looking_for_instrument, experience_level)
         .then((bands) => {
             res.status(200).send({ bands });
         })
