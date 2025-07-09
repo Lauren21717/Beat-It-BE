@@ -83,6 +83,86 @@ describe('GET /api/musicians', () => {
         });
       });
   });
+
+  describe('filtering queries', () => {
+    test('200: filters musicians by a single instrument', () => {
+      return request(app)
+        .get('/api/musicians?instrument=guitar')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians).toHaveLength(1);
+          expect(body.musicians[0].instruments).toMatch(/guitar/i);
+        });
+    });
+
+    test('200: filters musicians by genre', () => {
+      return request(app)
+        .get('/api/musicians?genre=rock')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians.length).toBeGreaterThan(0);
+          body.musicians.forEach((musician) => {
+            expect(musician.genres.toLowerCase()).toMatch(/rock/);
+          });
+        });
+    });
+
+    test('200: filters musicians by location', () => {
+      return request(app)
+        .get('/api/musicians?location=London')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.musicians.length).toBeGreaterThan(0);
+          body.musicians.forEach((musician) => {
+            expect(musician.location).toMatch(/London/i);
+          });
+        });
+    });
+
+    test('200: filters musicians by experience level', () => {
+      return request(app)
+        .get('/api/musicians?experience_level=advanced')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians.length).toBeGreaterThan(0);
+          body.musicians.forEach((musician) => {
+            expect(musician.experience_level).toMatch('advanced');
+          });
+        });
+    });
+
+    test('200: supports multiple filters simultaneously (genre and experience)', () => {
+      return request(app)
+        .get('/api/musicians?genre=rock&experience_level=advanced')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians.length).toBeGreaterThan(0);
+          body.musicians.forEach((musician) => {
+            expect(musician.genres.toLowerCase()).toMatch(/rock/);
+            expect(musician.experience_level).toMatch('advanced');
+          });
+        });
+    });
+
+    test('200: filtering is case-insensitive', () => {
+      return request(app)
+        .get('/api/musicians?instrument=GUITAR')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians).toHaveLength(1);
+          expect(body.musicians[0].instruments.toLowerCase()).toMatch(/guitar/);
+        });
+    });
+
+    test('200: returns an empty an empty arry when no musicians match the filter', () => {
+      return request(app)
+        .get('/api/musicians?instrument=violin')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.musicians).toEqual([]);
+        });
+    });
+  });
 });
 
 describe('GET /api/musicians/:musician_id', () => {
