@@ -42,6 +42,9 @@ let MusiciansController = class MusiciansController {
         const musician = await this.musiciansService.update(id, updateMusicianDto);
         return { musician };
     }
+    async remove(id) {
+        await this.musiciansService.remove(id);
+    }
 };
 exports.MusiciansController = MusiciansController;
 __decorate([
@@ -73,6 +76,14 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_musician_dto_1.UpdateMusicianDto]),
     __metadata("design:returntype", Promise)
 ], MusiciansController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.HttpCode)(204),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], MusiciansController.prototype, "remove", null);
 exports.MusiciansController = MusiciansController = __decorate([
     (0, common_1.Controller)('api/musicians'),
     __metadata("design:paramtypes", [musicians_service_1.MusiciansService])

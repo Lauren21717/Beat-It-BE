@@ -144,6 +144,15 @@ let MusiciansService = class MusiciansService {
             created_at: updatedMusician.created_at,
         };
     }
+    async remove(id) {
+        const existingMusician = await this.musicianRepository.findOne({
+            where: { musician_id: id }
+        });
+        if (!existingMusician) {
+            throw new common_1.NotFoundException(`Musician with ID ${id} not found`);
+        }
+        await this.musicianRepository.delete(id);
+    }
 };
 exports.MusiciansService = MusiciansService;
 exports.MusiciansService = MusiciansService = __decorate([

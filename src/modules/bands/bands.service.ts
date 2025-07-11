@@ -154,6 +154,10 @@ export class BandsService {
       .where('band.band_id = :id', { id })
       .getOne();
 
+    if (!updatedBand) {
+      throw new NotFoundException(`Band with ID ${id} not found after update.`);
+    }
+
     return {
       band_id: updatedBand.band_id,
       band_name: updatedBand.band_name,
@@ -165,5 +169,17 @@ export class BandsService {
       experience_level: updatedBand.experience_level,
       created_at: updatedBand.created_at,
     };
+  }
+
+  async remove(id: number): Promise<void> {
+    const existingBand = await this.bandRepository.findOne({
+      where: { band_id: id },
+    });
+
+    if (!existingBand) {
+      throw new NotFoundException(`Band with ID ${id} not found`);
+    }
+
+    await this.bandRepository.delete(id);
   }
 }

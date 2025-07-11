@@ -18,4 +18,5 @@ export declare class MusiciansController {
     update(id: number, updateMusicianDto: UpdateMusicianDto): Promise<{
         musician: MusicianResponseDto;
     }>;
+    remove(id: number): Promise<void>;
 }

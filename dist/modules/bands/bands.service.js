@@ -114,6 +114,45 @@ let BandsService = class BandsService {
             created_at: savedBand.created_at,
         };
     }
+    async update(id, updateBandDto) {
+        const existingBand = await this.bandRepository
+            .createQueryBuilder('band')
+            .leftJoinAndSelect('band.user', 'user')
+            .where('band.band_id = :id', { id })
+            .getOne();
+        if (!existingBand) {
+            throw new common_1.NotFoundException(`Band with ID ${id} not found`);
+        }
+        await this.bandRepository.update(id, updateBandDto);
+        const updatedBand = await this.bandRepository
+            .createQueryBuilder('band')
+            .leftJoinAndSelect('band.user', 'user')
+            .where('band.band_id = :id', { id })
+            .getOne();
+        if (!updatedBand) {
+            throw new common_1.NotFoundException(`Band with ID ${id} not found after update.`);
+        }
+        return {
+            band_id: updatedBand.band_id,
+            band_name: updatedBand.band_name,
+            username: updatedBand.user?.username,
+            bio: updatedBand.bio,
+            genre: updatedBand.genre,
+            location: updatedBand.location,
+            looking_for_instruments: updatedBand.looking_for_instruments,
+            experience_level: updatedBand.experience_level,
+            created_at: updatedBand.created_at,
+        };
+    }
+    async remove(id) {
+        const existingBand = await this.bandRepository.findOne({
+            where: { band_id: id },
+        });
+        if (!existingBand) {
+            throw new common_1.NotFoundException(`Band with ID ${id} not found`);
+        }
+        await this.bandRepository.delete(id);
+    }
 };
 exports.BandsService = BandsService;
 exports.BandsService = BandsService = __decorate([

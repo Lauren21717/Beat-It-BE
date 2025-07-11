@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, ParseIntPipe, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe, NotFoundException, Query, HttpCode } from '@nestjs/common';
 import { BandsService } from './bands.service';
 import { BandResponseDto } from './dto/band-response.dto';
 import { BandQueryDto } from './dto/band-query.dto';
@@ -43,5 +43,11 @@ export class BandsController {
   ): Promise<{ band: BandResponseDto }> {
     const band = await this.bandsService.update(id, updateBandDto);
     return { band };
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.bandsService.remove(id);
   }
 }

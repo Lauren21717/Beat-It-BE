@@ -12,4 +12,5 @@ export declare class MusiciansService {
     findOne(id: number): Promise<any | null>;
     create(createMusicianDto: CreateMusicianDto): Promise<any>;
     update(id: number, updateMusicianDto: UpdateMusicianDto): Promise<any>;
+    remove(id: number): Promise<void>;
 }

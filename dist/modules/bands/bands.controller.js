@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const bands_service_1 = require("./bands.service");
 const band_query_dto_1 = require("./dto/band-query.dto");
 const create_band_dto_1 = require("./dto/create-band.dto");
+const update_band_dto_1 = require("./dto/update-band.dto");
 let BandsController = class BandsController {
     bandsService;
     constructor(bandsService) {
@@ -36,6 +37,13 @@ let BandsController = class BandsController {
     async create(createBandDto) {
         const band = await this.bandsService.create(createBandDto);
         return { band };
+    }
+    async update(id, updateBandDto) {
+        const band = await this.bandsService.update(id, updateBandDto);
+        return { band };
+    }
+    async remove(id) {
+        await this.bandsService.remove(id);
     }
 };
 exports.BandsController = BandsController;
@@ -60,6 +68,22 @@ __decorate([
     __metadata("design:paramtypes", [create_band_dto_1.CreateBandDto]),
     __metadata("design:returntype", Promise)
 ], BandsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_band_dto_1.UpdateBandDto]),
+    __metadata("design:returntype", Promise)
+], BandsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.HttpCode)(204),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], BandsController.prototype, "remove", null);
 exports.BandsController = BandsController = __decorate([
     (0, common_1.Controller)('api/bands'),
     __metadata("design:paramtypes", [bands_service_1.BandsService])
