@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Body,
-  Param,
-  ParseIntPipe,
-  NotFoundException,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe, NotFoundException, Query, HttpCode } from '@nestjs/common';
 import { MusiciansService } from './musicians.service';
 import { MusicianResponseDto } from './dto/musician-response.dto';
 import { MusicianQueryDto } from './dto/musician-query.dto';
@@ -53,5 +43,11 @@ export class MusiciansController {
   ): Promise<{ musician: MusicianResponseDto }> {
     const musician = await this.musiciansService.update(id, updateMusicianDto);
     return { musician };
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.musiciansService.remove(id);
   }
 }

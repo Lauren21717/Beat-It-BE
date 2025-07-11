@@ -620,7 +620,7 @@ describe('Beat It API E2E Tests', () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.musician.available_for_gigs).toBe(false);
-          expect(body.musician.bio).toBeDefined(); 
+          expect(body.musician.bio).toBeDefined();
           expect(body.musician.instruments).toBeDefined();
         });
     });
@@ -654,6 +654,134 @@ describe('Beat It API E2E Tests', () => {
       return request(app.getHttpServer())
         .patch('/api/musicians/not-a-number')
         .send(updateMusician)
+        .expect(400);
+    });
+  });
+
+  describe('PATCH /api/bands/:id', () => {
+    test('200: responds with status 200', () => {
+      const updateBand = {
+        bio: 'Updated band bio',
+        genre: 'alternative rock',
+      };
+
+      return request(app.getHttpServer())
+        .patch('/api/bands/1')
+        .send(updateBand)
+        .expect(200);
+    });
+
+    test('200: responds with the updated band', () => {
+      const updateBand = {
+        band_name: 'The Updated Stars',
+        bio: 'Completely new bio',
+        location: 'Cardiff',
+      };
+
+      return request(app.getHttpServer())
+        .patch('/api/bands/1')
+        .send(updateBand)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('band');
+          expect(body.band).toMatchObject({
+            band_id: 1,
+            band_name: 'The Updated Stars',
+            bio: 'Completely new bio',
+            location: 'Cardiff',
+          });
+        });
+    });
+
+    test('200: only updates provided fields', () => {
+      const updateBand = {
+        genre: 'indie rock',
+      };
+
+      return request(app.getHttpServer())
+        .patch('/api/bands/1')
+        .send(updateBand)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.band.genre).toBe('indie rock');
+          expect(body.band.band_name).toBeDefined();
+          expect(body.band.looking_for_instruments).toBeDefined();
+        });
+    });
+
+    test('404: responds with error when band does not exist', () => {
+      const updateBand = { bio: 'Updated bio' };
+
+      return request(app.getHttpServer())
+        .patch('/api/bands/999')
+        .send(updateBand)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toContain('Band with ID 999 not found');
+        });
+    });
+
+    test('400: responds with error for invalid band_id', () => {
+      const updateBand = { bio: 'Updated bio' };
+
+      return request(app.getHttpServer())
+        .patch('/api/bands/not-a-number')
+        .send(updateBand)
+        .expect(400);
+    });
+  });
+
+  describe('DELETE /api/musicians/:id', () => {
+    test('204: responds with status 204 and no content', () => {
+      return request(app.getHttpServer())
+        .delete('/api/musicians/1')
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+
+    test('204: musician is deleted from database', () => {
+      return request(app.getHttpServer())
+        .delete('/api/musicians/1')
+        .expect(204)
+        .then(() => {
+          return request(app.getHttpServer()).get('/api/musicians/1');
+        })
+        .then((response) => {
+          expect(response.status).toBe(404);
+        });
+    });
+
+    test('204: total musician count decreases after deletion', () => {
+      let originalCount;
+
+      return request(app.getHttpServer())
+        .get('/api/musicians')
+        .then(({ body }) => {
+          originalCount = body.musicians.length;
+          return request(app.getHttpServer()).delete('/api/musicians/1');
+        })
+        .then(() => {
+          return request(app.getHttpServer()).get('/api/musicians');
+        })
+        .then(({ body }) => {
+          expect(body.musicians.length).toBe(originalCount - 1);
+        });
+    });
+
+    test('404: responds with error when musician does not exist', () => {
+      return request(app.getHttpServer())
+        .delete('/api/musicians/999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toContain('Musician with ID 999 not found');
+        });
+    });
+
+    test('400: responds with error for invalid musician_id', () => {
+      return request(app.getHttpServer())
+        .delete('/api/musicians/not-a-number')
         .expect(400);
     });
   });

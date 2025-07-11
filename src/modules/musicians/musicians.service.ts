@@ -169,4 +169,18 @@ export class MusiciansService {
       created_at: updatedMusician.created_at,
     };
   }
+
+  async remove(id: number): Promise<void> {
+    // Check if musician exists
+    const existingMusician = await this.musicianRepository.findOne({
+      where: { musician_id: id }
+    });
+
+    if (!existingMusician) {
+      throw new NotFoundException(`Musician with ID ${id} not found`);
+    }
+
+    // Delete the musician
+    await this.musicianRepository.delete(id);
+  }
 }

@@ -1,10 +1,15 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BandProfile } from './entities/band-profile.entity';
 import { User } from '../users/entities/user.entity';
 import { BandQueryDto } from './dto/band-query.dto';
 import { CreateBandDto } from './dto/create-band.dto';
+import { UpdateBandDto } from './dto/update-band.dto';
 
 @Injectable()
 export class BandsService {
@@ -124,6 +129,41 @@ export class BandsService {
       looking_for_instruments: savedBand.looking_for_instruments,
       experience_level: savedBand.experience_level,
       created_at: savedBand.created_at,
+    };
+  }
+
+  async update(id: number, updateBandDto: UpdateBandDto): Promise<any> {
+    // Check if band exists
+    const existingBand = await this.bandRepository
+      .createQueryBuilder('band')
+      .leftJoinAndSelect('band.user', 'user')
+      .where('band.band_id = :id', { id })
+      .getOne();
+
+    if (!existingBand) {
+      throw new NotFoundException(`Band with ID ${id} not found`);
+    }
+
+    // Update the band
+    await this.bandRepository.update(id, updateBandDto);
+
+    // Fetch and return the updated band
+    const updatedBand = await this.bandRepository
+      .createQueryBuilder('band')
+      .leftJoinAndSelect('band.user', 'user')
+      .where('band.band_id = :id', { id })
+      .getOne();
+
+    return {
+      band_id: updatedBand.band_id,
+      band_name: updatedBand.band_name,
+      username: updatedBand.user?.username,
+      bio: updatedBand.bio,
+      genre: updatedBand.genre,
+      location: updatedBand.location,
+      looking_for_instruments: updatedBand.looking_for_instruments,
+      experience_level: updatedBand.experience_level,
+      created_at: updatedBand.created_at,
     };
   }
 }
