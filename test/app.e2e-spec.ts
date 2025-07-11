@@ -785,4 +785,59 @@ describe('Beat It API E2E Tests', () => {
         .expect(400);
     });
   });
+
+  describe('DELETE /api/bands/:id', () => {
+    test('204: responds with status 204 and no content', () => {
+      return request(app.getHttpServer())
+        .delete('/api/bands/1')
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+  
+    test('204: band is deleted from database', () => {
+      return request(app.getHttpServer())
+        .delete('/api/bands/1')
+        .expect(204)
+        .then(() => {
+          return request(app.getHttpServer()).get('/api/bands/1');
+        })
+        .then((response) => {
+          expect(response.status).toBe(404);
+        });
+    });
+  
+    test('204: total band count decreases after deletion', () => {
+      let originalCount;
+      
+      return request(app.getHttpServer())
+        .get('/api/bands')
+        .then(({ body }) => {
+          originalCount = body.bands.length;
+          return request(app.getHttpServer()).delete('/api/bands/1');
+        })
+        .then(() => {
+          return request(app.getHttpServer()).get('/api/bands');
+        })
+        .then(({ body }) => {
+          expect(body.bands.length).toBe(originalCount - 1);
+        });
+    });
+  
+    test('404: responds with error when band does not exist', () => {
+      return request(app.getHttpServer())
+        .delete('/api/bands/999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toContain('Band with ID 999 not found');
+        });
+    });
+  
+    test('400: responds with error for invalid band_id', () => {
+      return request(app.getHttpServer())
+        .delete('/api/bands/not-a-number')
+        .expect(400);
+    });
+  });
 });
