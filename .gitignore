@@ -1,2 +1,10 @@
 node_modules
 .env.*
+app.js
+endpoints.json
+listen.js
+models
+routes
+db
+controllers
+__tests__
