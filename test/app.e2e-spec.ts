@@ -3,6 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { DataSource } from 'typeorm';
+import { TestUtils } from './test-utils';
 import { User } from '../src/modules/users/entities/user.entity';
 import { MusicianProfile } from '../src/modules/musicians/entities/musician-profile.entity';
 import { BandProfile } from '../src/modules/bands/entities/band-profile.entity';
@@ -32,7 +33,7 @@ describe('Beat It API E2E Tests', () => {
     await app.init();
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
-    await seedTestData();
+    await TestUtils.seedTestData(dataSource, userData, musicianData, bandData);
   });
 
   afterEach(async () => {
@@ -795,7 +796,7 @@ describe('Beat It API E2E Tests', () => {
           expect(body).toEqual({});
         });
     });
-  
+
     test('204: band is deleted from database', () => {
       return request(app.getHttpServer())
         .delete('/api/bands/1')
@@ -807,10 +808,10 @@ describe('Beat It API E2E Tests', () => {
           expect(response.status).toBe(404);
         });
     });
-  
+
     test('204: total band count decreases after deletion', () => {
       let originalCount;
-      
+
       return request(app.getHttpServer())
         .get('/api/bands')
         .then(({ body }) => {
@@ -824,7 +825,7 @@ describe('Beat It API E2E Tests', () => {
           expect(body.bands.length).toBe(originalCount - 1);
         });
     });
-  
+
     test('404: responds with error when band does not exist', () => {
       return request(app.getHttpServer())
         .delete('/api/bands/999')
@@ -833,7 +834,7 @@ describe('Beat It API E2E Tests', () => {
           expect(body.message).toContain('Band with ID 999 not found');
         });
     });
-  
+
     test('400: responds with error for invalid band_id', () => {
       return request(app.getHttpServer())
         .delete('/api/bands/not-a-number')
@@ -847,7 +848,7 @@ describe('Beat It API E2E Tests', () => {
         user_id: null,
         experience_level: 'advanced',
         instruments: 'guitar',
-        genres: 'rock'
+        genres: 'rock',
       };
 
       return request(app.getHttpServer())
@@ -869,19 +870,19 @@ describe('Beat It API E2E Tests', () => {
 
     test('400: validation errors have consistent format', () => {
       const invalidMusician = {
-        bio: 'Only bio provided'
+        bio: 'Only bio provided',
       };
 
       return request(app.getHttpServer())
-      .post('/api/musicians')
-      .send(invalidMusician)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body).toHaveProperty('message');
-        expect(body).toHaveProperty('statusCode');
-        expect(body.statusCode).toBe(400);
-        expect(Array.isArray(body.message)).toBe(true);
-      });
+        .post('/api/musicians')
+        .send(invalidMusician)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('message');
+          expect(body).toHaveProperty('statusCode');
+          expect(body.statusCode).toBe(400);
+          expect(Array.isArray(body.message)).toBe(true);
+        });
     });
   });
 });
