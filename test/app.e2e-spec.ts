@@ -840,4 +840,48 @@ describe('Beat It API E2E Tests', () => {
         .expect(400);
     });
   });
+
+  describe('Error Handling', () => {
+    test('500: handles upexpected server errors gracefully', () => {
+      const invalidMusician = {
+        user_id: null,
+        experience_level: 'advanced',
+        instruments: 'guitar',
+        genres: 'rock'
+      };
+
+      return request(app.getHttpServer())
+        .post('/api/musicians')
+        .send(invalidMusician)
+        .expect(400);
+    });
+
+    test('404: responds consistently for all non-existent routes', () => {
+      return request(app.getHttpServer())
+        .post('/api/musicians')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('message');
+          expect(body).toHaveProperty('statusCode');
+          expect(body.statusCode).toBe(404);
+        });
+    });
+
+    test('400: validation errors have consistent format', () => {
+      const invalidMusician = {
+        bio: 'Only bio provided'
+      };
+
+      return request(app.getHttpServer())
+      .post('/api/musicians')
+      .send(invalidMusician)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toHaveProperty('message');
+        expect(body).toHaveProperty('statusCode');
+        expect(body.statusCode).toBe(400);
+        expect(Array.isArray(body.message)).toBe(true);
+      });
+    });
+  });
 });
