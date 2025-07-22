@@ -12,7 +12,8 @@ import { BandProfile } from './modules/bands/entities/band-profile.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -21,6 +22,10 @@ import { BandProfile } from './modules/bands/entities/band-profile.entity';
       synchronize: process.env.NODE_ENV !== 'production',
       dropSchema: false,
       autoLoadEntities: true,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
     }),
     MusiciansModule,
     BandsModule,
