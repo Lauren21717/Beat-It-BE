@@ -1,98 +1,230 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Beat It! Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful API for a music networking platform built with NestJS, TypeScript, and PostgreSQL. Beat It! connects musicians and bands, helping them showcase talent, find collaborators, and grow the music community.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🎵 **[Live API](https://beat-it-be.onrender.com/)** *(Coming Soon)*
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- JWT-based user authentication  
+- Musician and band profiles  
+- Advanced search filters (location, genre, instruments, etc.)  
+- Application system for musicians to join bands  
+- File uploads (avatars and audio samples)  
+- Full CRUD operations  
+- Global error handling  
+- E2E test coverage > 95%  
 
-## Project setup
+## Tech Stack
 
-```bash
-$ npm install
+- **Backend**: NestJS, TypeScript  
+- **Database**: PostgreSQL, TypeORM  
+- **Auth**: JWT, bcryptjs  
+- **Uploads**: Multer (local)  
+- **Validation**: class-validator, DTOs  
+- **Testing**: Jest  
+- **Docs**: OpenAPI/Swagger  
+- **Deployment**: Railway/Render (Docker-ready)
+
+## API Endpoints
+
+### Authentication
+
+| Method | Endpoint           | Description             |
+|--------|--------------------|-------------------------|
+| POST   | `/api/auth/signup` | Register a new user     |
+| POST   | `/api/auth/login`  | Login and get JWT token |
+
+### Musicians
+
+| Method | Endpoint               | Description                          |
+|--------|------------------------|--------------------------------------|
+| GET    | `/api/musicians`       | Fetch all musicians (with filters)   |
+| GET    | `/api/musicians/:id`   | Get specific musician profile        |
+| POST   | `/api/musicians`       | Create profile (auth required)       |
+| PATCH  | `/api/musicians/:id`   | Update profile (auth required)       |
+| DELETE | `/api/musicians/:id`   | Delete profile (auth required)       |
+
+### Bands
+
+| Method | Endpoint            | Description                          |
+|--------|---------------------|--------------------------------------|
+| GET    | `/api/bands`        | Fetch all bands (with filters)       |
+| GET    | `/api/bands/:id`    | Get specific band profile            |
+| POST   | `/api/bands`        | Create band (auth required)          |
+| PATCH  | `/api/bands/:id`    | Update band (auth required)          |
+| DELETE | `/api/bands/:id`    | Delete band (auth required)          |
+
+### Applications
+
+| Method | Endpoint                                | Description                                |
+|--------|-----------------------------------------|--------------------------------------------|
+| POST   | `/api/bands/:id/applications`           | Apply to band (auth required)              |
+| GET    | `/api/bands/:id/applications`           | View applications (band owner only)        |
+| PATCH  | `/api/applications/:id`                 | Accept/reject application (band owner)     |
+
+### File Uploads
+
+| Method | Endpoint                                 | Description                          |
+|--------|------------------------------------------|--------------------------------------|
+| POST   | `/api/musicians/:id/avatar`              | Upload avatar (auth required)        |
+| POST   | `/api/musicians/:id/audio-samples`       | Upload audio (auth required)         |
+| GET    | `/api/musicians/:id/audio-samples`       | Get audio samples                     |
+| DELETE | `/api/audio-samples/:id`                 | Delete audio (auth required)         |
+
+### Example Query Params
+
+```http
+GET /api/musicians?instrument=drums&genre=pop&location=Leeds
+GET /api/bands?looking_for_instrument=bass&location=Bristol
 ```
 
-## Compile and run the project
+## Getting Started
+
+### Prerequisites
+
+- Node.js v18+  
+- PostgreSQL v14+  
+- npm v8+  
+
+### Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/yourusername/beat-it-backend.git
+cd beat-it-backend
+npm install
 ```
 
-## Run tests
+### Database Setup
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run setup-dbs
 ```
 
-## Deployment
+Create two `.env` files:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+**.env.development**
+```ini
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=beat_it
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**.env.test**
+```ini
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=beat_it_test
+JWT_SECRET=test_secret
+NODE_ENV=test
+```
+
+> ⚠️ `.env` files are gitignored for security.
+
+### Running the App
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev     # Dev mode
+npm run start:prod    # Prod mode
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Running Tests
 
-## Resources
+```bash
+npm test              # All E2E tests
+npm run test:cov      # Coverage report
+npm run test:watch    # Watch mode
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Database Schema
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- - ![Entity Relationship Diagram](static/media/db.png)
 
-## Support
+- **users**: Auth info  
+- **musician_profiles**: Musician info, genres, instruments  
+- **band_profiles**: Band info, looking-for list  
+- **band_applications**: Musician-to-band applications  
+- **audio_samples**: Uploaded music files
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Key Relationships
 
-## Stay in touch
+- 1:1 user ↔ profile(s)  
+- 1:N band ↔ applications  
+- 1:N musician ↔ audio samples
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Authentication
+
+- Passwords hashed with bcryptjs  
+- JWT valid for 24 hours  
+- Protected routes require `Authorization: Bearer <token>`
+
+## File Upload System
+
+- **Images**: JPG, PNG (max 5MB)  
+- **Audio**: MP3, WAV, FLAC (max 50MB)  
+- Uses Multer for local storage  
+- Cloud integration (e.g. S3) planned
+
+## Error Handling
+
+Standard error response:
+
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "path": "/api/musicians",
+  "method": "POST",
+  "message": ["email must be valid"]
+}
+```
+
+## Future Roadmap
+
+### Phase 1: User Experience
+- Real-time chat (WebSocket)
+- Push notifications
+- Profile enhancements
+
+### Phase 2: Community
+- Reviews and ratings
+- Follow system and feeds
+- Gigs and event system
+
+### Phase 3: Monetization & Mobile
+- Stripe payments
+- Premium features
+- React Native app
+- Live streaming
+
+### Phase 4: AI & Analytics
+- AI matching
+- User insights dashboard
+- Auto moderation
+
+## API Documentation
+
+- Local: `http://localhost:3000/api/docs`  
+- Prod: `https://your-api-url.com/api/docs` *(Coming Soon)*
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT License. See [LICENSE](LICENSE).
+
+## Support
+
+- GitHub: [Create an issue](https://github.com/yourusername/beat-it-backend/issues)  
+- Email: support@beatit-api.com  
+- Docs: [Full API Docs](https://docs.beatit-api.com)
+
+## Acknowledgments
+
+- NestJS & TypeORM teams  
+- Northcoders bootcamp  
+- Open source community ❤️
